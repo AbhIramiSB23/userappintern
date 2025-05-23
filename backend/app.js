@@ -2,6 +2,7 @@ const express=require('express');
 const app=new express();
 const PORT=4000;
 require('./connection')
+app.use(express.json());
 const userModel=require('./model/userData');
 const cors=require('cors')
 app.use(cors())
@@ -16,6 +17,39 @@ app.get('/users',async(req,res)=>{
     }
 
 });
+app.post('/newuser',async(req,res)=>{
+    try {
+
+            var item=req.body;
+            const datasave=new userModel(item);
+            const saveddata= await datasave.save();
+            res.send('Post successful');
+
+    } catch (error) {
+        console.log(error)
+    }
+})
+//api for deletion 
+app.delete('/userremoval/:id',async(req,res)=>{
+    try{
+        await userModel.findByIdAndDelete(req.params.id);
+        res.send("Deleted successfully");
+
+    }
+    catch(error){
+        console.log("error in deletion");
+    }
+    app.put('/userupdation/:id',async (req,res)=>{
+    try {
+     const data= await userModel.findByIdAndUpdate(req.params.id,req.body);
+     res.send('Updated successfully')
+    } 
+    catch (error) {
+     console.log(error)
+    }
+ })
+
+})
 //server in listening mode
 app.listen(PORT,()=>{
     console.log(`server is listening at ${PORT}`);
